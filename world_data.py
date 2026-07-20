@@ -90,17 +90,14 @@ def haversine_km(lat1, lon1, lat2, lon2):
 
 def build_fresh_world():
     """
-    Build a brand-new set of Region objects and Connection objects.
-    Call this every time a simulation starts or resets, so infection
-    state from a previous run never carries over.
+    Build a brand-new set of Region objects and Connection objects with dynamic weights.
     """
     regions = [Region(row[0], row[1], row[2], row[3], row[4]) for row in WORLD_REGIONS_RAW]
     by_id = {r.id: r for r in regions}
 
     connections = []
 
-    # Land connections: each region connects to its 2 nearest neighbors
-    # on the same continent.
+    # Land connections: each region connects to its 2 nearest neighbors on the same continent
     for row in WORLD_REGIONS_RAW:
         region_id, _, lat, lon, _, continent = row
         region = by_id[region_id]
@@ -116,12 +113,14 @@ def build_fresh_world():
             weight = max(0.02, min(0.25, 400 / distance))
             connections.append(Connection(region, neighbor, "land", weight))
 
-    # Air connections: every hub connects to every other hub, and every
-    # non-hub region connects to its nearest hub.
+    # Air connections: scaled dynamically using an epidemiological Gravity Model
     hubs = [by_id[h] for h in AIR_HUB_IDS]
     for i in range(len(hubs)):
         for j in range(i + 1, len(hubs)):
-            connections.append(Connection(hubs[i], hubs[j], "air", 0.05))
+            dist = haversine_km(hubs[i].lat, hubs[i].lon, hubs[j].lat, hubs[j].lon)
+            # Gravity weight proportional to populations and inversely proportional to distance
+            gravity_weight = (hubs[i].population * hubs[j].population) / (dist ** 0.8) * 0.08
+            connections.append(Connection(hubs[i], hubs[j], "air", min(0.25, max(0.01, gravity_weight))))
 
     rows_by_id = {row[0]: row for row in WORLD_REGIONS_RAW}
     for row in WORLD_REGIONS_RAW:
@@ -137,7 +136,10 @@ def build_fresh_world():
             if dist < nearest_dist:
                 nearest_dist = dist
                 nearest_hub = by_id[hub_id]
-        connections.append(Connection(region, nearest_hub, "air", 0.08))
+        
+        # Compute regional-to-hub flight gravity density
+        gravity_weight = (region.population * nearest_hub.population) / (nearest_dist ** 0.8) * 0.12
+        connections.append(Connection(region, nearest_hub, "air", min(0.20, max(0.02, gravity_weight))))
 
     return regions, connections
 
