@@ -1,24 +1,3 @@
-"""
-app.py
-
-The website. Run it with:
-    streamlit run app.py
-
-This file draws things and reads button clicks -- it never recomputes
-any outbreak math itself. Every number on the page comes from calling
-methods that already exist on the classes in src/compartmental_model.py
-and src/network_model.py.
-
-The world map uses Plotly's built-in geography (real country borders,
-not hand-drawn shapes) -- Plotly ships its own basemap data, so this
-needs no additional map files or API keys.
-
-Streamlit apps are usually written as a script that runs top-to-bottom
-on every interaction, not as a big class hierarchy -- that's normal for
-Streamlit, not a shortcut. The OOP still lives in src/, same as always;
-this file is the "wiring," like cli.py or app.js were in earlier
-versions of this project.
-"""
 
 import streamlit as st
 import plotly.graph_objects as go
