@@ -229,6 +229,8 @@ if model_choice == "Network (map)":
                 st.text(line)
 
         if st.session_state.playing:
+            import time
+            time.sleep(0.1)  # Throttles execution to prevent 100% CPU spikes
             st.rerun()
 
 
