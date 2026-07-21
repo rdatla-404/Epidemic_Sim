@@ -1,14 +1,9 @@
 """
-src/compartmental_model.py
-
 The deterministic half of this project: a global SIR/SEIR model with no
 geography at all -- one population, solved with RK4. This answers "what
 does transmission look like in aggregate" (R0, herd immunity threshold,
 how incubation length reshapes the epidemic curve). It cannot represent
 where an outbreak is on a map, which is what network_model.py is for.
-
-Plain classes only: __init__ plus methods, no dataclasses, no advanced
-typing.
 """
 
 
@@ -115,11 +110,18 @@ class CompartmentalModel:
             else:
                 S, E, I, R = self._rk4_step_seir(S, E, I, R, dt)
 
-            S = min(max(S, 0.0), 1.0)
-            I = min(max(I, 0.0), 1.0)
-            R = min(max(R, 0.0), 1.0)
+            S = max(S, 0.0)
+            I = max(I, 0.0)
+            R = max(R, 0.0)
             if self.model_type == "seir":
-                E = min(max(E, 0.0), 1.0)
+                E = max(E, 0.0)
+                total = S + E + I + R
+            else:
+                total = S + I + R
+            if total > 0:
+                S, I, R = S / total, I / total, R / total
+                if self.model_type == "seir":
+                    E = E / total
 
             t += dt
             t_values.append(t); S_values.append(S); I_values.append(I); R_values.append(R)
