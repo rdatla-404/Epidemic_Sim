@@ -110,6 +110,10 @@ def build_fresh_world():
             others.append((distance, by_id[other_id]))
         others.sort(key=lambda pair: pair[0])
         for distance, neighbor in others[:2]:
+            pair_key = frozenset((region.id, neighbor.id))
+            if pair_key in seen_land_pairs:
+                continue
+            seen_land_pairs.add(pair_key)
             weight = max(0.02, min(0.25, 400 / distance))
             connections.append(Connection(region, neighbor, "land", weight))
 
