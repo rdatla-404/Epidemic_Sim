@@ -22,7 +22,7 @@ def test_world_data_builds_correctly():
     assert len(regions) == 45
     assert len(connections) == 180
     assert len([c for c in connections if c.type == "air"]) == 122
-    assert len([c for c in connections if c.type == "land"]) == 90
+    assert len([c for c in connections if c.type == "land"]) == 58
 
 
 def test_airborne_disease_reaches_far_more_regions_than_fast_onset_disease():
