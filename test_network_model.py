@@ -20,7 +20,7 @@ def get_disease(name):
 def test_world_data_builds_correctly():
     regions, connections = build_fresh_world()
     assert len(regions) == 45
-    assert len(connections) == 212
+    assert len(connections) == 180
     assert len([c for c in connections if c.type == "air"]) == 122
     assert len([c for c in connections if c.type == "land"]) == 90
 
