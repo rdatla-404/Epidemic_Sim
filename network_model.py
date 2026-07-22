@@ -187,7 +187,7 @@ class Simulation:
         # --- Step 3: apply everything ---
         newly_reached = []
         for region, d_s, d_e, d_i, d_r in local_changes:
-            was_affected = region.total_affected() > 0
+            was_affected = region.ever_infected
 
             region.S += d_s
             region.E += d_e
