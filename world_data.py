@@ -96,6 +96,7 @@ def build_fresh_world():
     by_id = {r.id: r for r in regions}
 
     connections = []
+    seen_land_pairs = set()
 
     # Land connections: each region connects to its 2 nearest neighbors on the same continent
     for row in WORLD_REGIONS_RAW:
